@@ -1,0 +1,41 @@
+<?php return array(
+    'root' => array(
+        'name' => 'uhlhosting/postal-mail',
+        'pretty_version' => '1.0.1',
+        'version' => '1.0.1.0',
+        'reference' => NULL,
+        'type' => 'wordpress-plugin',
+        'install_path' => __DIR__ . '/../../',
+        'aliases' => array(),
+        'dev' => true,
+    ),
+    'versions' => array(
+        'atellitech/postal' => array(
+            'pretty_version' => '1.0.1',
+            'version' => '1.0.1.0',
+            'reference' => 'a2ee2d7a2c037d57fe21da826018e975c87defca',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../atellitech/postal',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'rmccue/requests' => array(
+            'pretty_version' => 'v2.0.7',
+            'version' => '2.0.7.0',
+            'reference' => 'e14a6f4e7438d3f8da3f2657759e6367b906ee23',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../rmccue/requests',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'uhlhosting/postal-mail' => array(
+            'pretty_version' => '1.0.1',
+            'version' => '1.0.1.0',
+            'reference' => NULL,
+            'type' => 'wordpress-plugin',
+            'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+    ),
+);
