@@ -36,8 +36,6 @@
     }
 }
 
-/* Rest of your styles remain the same, they will use the new color variables. */
-
 /* Use the variables in your styles */
 .postal-mail-settings form {
     content-visibility: auto;
