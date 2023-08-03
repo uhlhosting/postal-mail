@@ -1,74 +1,57 @@
-/**
- * File: postal-mail.js
- *
- * This script handles the click event for the 'Send Test Email' button
- * in the Postal Mail settings page. When the button is clicked, it sends
- * an AJAX request to the server to send a test email.
- *
- * Dependencies: None
- *
- * @package PostalMail
- */
-
 document.addEventListener('DOMContentLoaded', function () {
-    var testEmailButton = document.querySelector('#test_email_button');
+    const testEmailButton = document.querySelector('#test_email_button');
 
-    // Disable the button during AJAX request
     function disableButton() {
+        console.log('Disabling button...');
         testEmailButton.disabled = true;
     }
 
-    // Enable the button after AJAX request is complete
     function enableButton() {
+        console.log('Enabling button...');
         testEmailButton.disabled = false;
         testEmailButton.innerText = 'Send Test Email'; // Revert the button text
     }
 
-    // Show a loading spinner while AJAX request is in progress
     function showLoadingIndicator() {
+        console.log('Showing loading indicator...');
         testEmailButton.innerText = 'Sending...';
     }
 
-    // Show a success message
     function showSuccessMessage() {
+        console.log('Showing success message...');
         // Create a new a element
-        var link = document.createElement('a');
+        const link = document.createElement('a');
 
         // Set the href to the ajaxurl
         link.href = ajaxurl;
 
         // Extract the domain (hostname)
-        var domain = link.hostname;
-
-        // Remove the subdomain if it exists
-        var parts = domain.split('.');
+        let domain = link.hostname;
+        const parts = domain.split('.');
         if (parts.length > 2) {
-            // Remove the first part (the subdomain)
             parts.shift();
-            // Reassemble the domain
             domain = parts.join('.');
         }
 
-        // Generate sender email
-        var senderEmail = "postmaster@" + domain;
+        const senderEmail = "postmaster@" + domain;
+        const sender = "Postmaster <" + senderEmail + ">";
 
-        // Concatenate sender's name and email with a space in between
-        var sender = "Postmaster <" + senderEmail + ">";
-
-        alert(`Test email sent successfully from: ${sender}`);
+        alert(`Test email sent successfully from: `);
     }
 
-    // Show an error message
     function showErrorMessage(error) {
-        // Implement your error message display here, for example:
+        console.log('Showing error message...');
         alert('Error: ' + error);
     }
 
-    testEmailButton.addEventListener('click', function () {
-        // Disable the button during AJAX request
-        disableButton();
+    function handleTestEmailButtonClick(event) {
+        const target = event.target;
 
-        // Show a loading indicator while the request is in progress
+        if (!target.matches('#test_email_button')) {
+            return;
+        }
+
+        disableButton();
         showLoadingIndicator();
 
         fetch(ajaxurl, {
@@ -78,24 +61,20 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: 'action=postal_mail_test_email',
         })
-            .then(function (response) {
-                // Re-enable the button after AJAX request is complete
+            .then(async (response) => {
                 enableButton();
 
-                // Check the response status and handle accordingly
                 if (response.ok) {
                     showSuccessMessage();
                 } else {
-                    // Handle HTTP errors
                     throw new Error('Failed to send test email.');
                 }
             })
-            .catch(function (error) {
-                // Re-enable the button after AJAX request is complete
+            .catch((error) => {
                 enableButton();
-
-                // Show the error message
                 showErrorMessage(error.message);
             });
-    });
+    }
+
+    document.addEventListener('click', handleTestEmailButtonClick);
 });
