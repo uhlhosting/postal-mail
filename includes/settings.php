@@ -1,70 +1,100 @@
 <?php
 
-/**
- * File Name: settings.php for Postal Mail Plugin
- * Description: This file is responsible for creating and handling the settings page for the Postal Mail plugin.
- *              It includes functions to initialize the settings page, add it to the WordPress admin menu, display
- *              the settings page, and register the plugin options in the WordPress database.
- * Version: 1.0.1
- * Author: Viorel-Cosmin Miron
- * Author URI: https://uhlhosting.ch
- * Text Domain: postal-mail
- */
+namespace PostalWp;
 
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
-/**
- * Class PostalMailSettings
- * A class to handle the plugin's settings page
- */
 class PostalMailSettings
 {
-    /**
-     * Initialize the settings page
-     */
     public static function init()
     {
-        add_action('admin_menu', [__CLASS__, 'addSettingsPage']);
-        add_action('admin_init', [__CLASS__, 'registerSettings']);
+        add_action('admin_menu', [self::class, 'addSettingsPage']);
+        add_action('admin_init', [self::class, 'registerAndSanitizeSettings']);
+        add_action('admin_init', [self::class, 'addSettingsSectionsAndFields']);
     }
 
-    /**
-     * Add the settings page to the WordPress admin menu
-     */
     public static function addSettingsPage()
     {
         add_options_page(
-            'Postal Mail Settings',
-            'Postal Mail',
+            __('Postal Mail Settings', 'postal-mail'),
+            __('Postal Mail', 'postal-mail'),
             'manage_options',
             'postal_mail_settings',
-            [__CLASS__, 'displaySettingsPage']
+            [self::class, 'displaySettingsPage']
         );
     }
 
-    /**
-     * Display the settings page
-     */
+    public static function registerAndSanitizeSettings()
+    {
+        register_setting('postal_mail_options', 'postal_wp_host', 'sanitize_text_field');
+        register_setting('postal_mail_options', 'postal_wp_secret_key', 'sanitize_text_field');
+        register_setting('postal_mail_options', 'postal_wp_from_address', 'sanitize_email');
+        register_setting('postal_mail_options', 'postal_wp_switch', 'intval');
+    }
+
+    public static function addSettingsSectionsAndFields()
+    {
+        add_settings_section(
+            'postal_mail_api_settings',
+            __('API Settings', 'postal-mail'),
+            [self::class, 'displayApiSettingsSection'],
+            'postal_mail_settings'
+        );
+
+        add_settings_field(
+            'postal_wp_host',
+            __('Postal API Host', 'postal-mail'),
+            [self::class, 'displayHostSettingField'],
+            'postal_mail_settings',
+            'postal_mail_api_settings'
+        );
+
+        add_settings_field(
+            'postal_wp_secret_key',
+            __('Postal API Secret Key', 'postal-mail'),
+            [self::class, 'displaySecretKeySettingField'],
+            'postal_mail_settings',
+            'postal_mail_api_settings'
+        );
+
+        add_settings_field(
+            'postal_wp_from_address',
+            __('From Address', 'postal-mail'),
+            [self::class, 'displayFromAddressSettingField'],
+            'postal_mail_settings',
+            'postal_mail_api_settings'
+        );
+
+        // Add the new Email Sending setting field
+        add_settings_field(
+            'postal_wp_switch',
+            __('Email Sending', 'postal-mail'),
+            [self::class, 'displayEmailSendingSettingField'],
+            'postal_mail_settings',
+            'postal_mail_api_settings'
+        );
+    }
+
     public static function displaySettingsPage()
     {
+        if (!current_user_can('manage_options')) {
+            return;
+        }
+
         ?>
-        <div class="wrap">
+        <div class="wrap postal-mail-settings">
             <h2>
-                <?php esc_html_e('Postal Mail Settings', 'postal-mail'); ?>
+                <?php echo esc_html(get_admin_page_title()); ?>
             </h2>
-            <form method="post" action="options.php">
-                <?php settings_fields('postal_mail_options'); ?>
-                <table class="form-table">
-                    <?php self::displayHostSetting(); ?>
-                    <?php self::displaySecretKeySetting(); ?>
-                    <?php self::displayFromAddressSetting(); ?>
-                    <?php self::displayEmailSendingSetting(); ?>
-                </table>
-                <?php submit_button(); ?>
+            <form action="options.php" method="post">
+                <?php
+                settings_fields('postal_mail_options');
+                do_settings_sections('postal_mail_settings');
+                submit_button();
+                ?>
             </form>
-            <!-- Add the test email button here -->
             <button id="test_email_button" class="button button-primary">
                 <?php esc_html_e('Send Test Email', 'postal-mail'); ?>
             </button>
@@ -72,89 +102,34 @@ class PostalMailSettings
         <?php
     }
 
-    /**
-     * Display the host setting field
-     */
-    public static function displayHostSetting()
+    public static function displayApiSettingsSection()
     {
-        ?>
-        <tr valign="top">
-            <th scope="row">
-                <?php esc_html_e('Postal API Host', 'postal-mail'); ?>
-            </th>
-            <td>
-                <input type="text" name="postal_wp_host" value="<?php echo esc_attr(get_option('postal_wp_host')); ?>"
-                    class="regular-text" />
-            </td>
-        </tr>
-        <?php
+        echo '<p>' . esc_html__('Enter your Postal API settings below:', 'postal-mail') . '</p>';
     }
 
-    /**
-     * Display the secret key setting field
-     */
-    public static function displaySecretKeySetting()
+    public static function displayHostSettingField()
     {
-        ?>
-        <tr valign="top">
-            <th scope="row">
-                <?php esc_html_e('Postal API Secret Key', 'postal-mail'); ?>
-            </th>
-            <td>
-                <input type="text" name="postal_wp_secret_key"
-                    value="<?php echo esc_attr(get_option('postal_wp_secret_key')); ?>" class="regular-text" />
-            </td>
-        </tr>
-        <?php
+        $value = get_option('postal_wp_host');
+        echo "<input type='text' name='postal_wp_host' value='" . esc_attr($value) . "' />";
     }
 
-    /**
-     * Display the from address setting field
-     */
-    public static function displayFromAddressSetting()
+    public static function displaySecretKeySettingField()
     {
-        ?>
-        <tr valign="top">
-            <th scope="row">
-                <?php esc_html_e('From Address', 'postal-mail'); ?>
-            </th>
-            <td>
-                <input type="text" name="postal_wp_from_address"
-                    value="<?php echo esc_attr(get_option('postal_wp_from_address')); ?>" class="regular-text" />
-            </td>
-        </tr>
-        <?php
+        $value = get_option('postal_wp_secret_key');
+        echo "<input type='text' name='postal_wp_secret_key' value='" . esc_attr($value) . "' />";
     }
 
-    /**
-     * Display the email sending setting field
-     */
-    public static function displayEmailSendingSetting()
+    public static function displayFromAddressSettingField()
     {
-        ?>
-        <tr valign="top">
-            <th scope="row">
-                <?php esc_html_e('Email Sending', 'postal-mail'); ?>
-            </th>
-            <td>
-                <input type="checkbox" name="postal_wp_switch" value="1" <?php checked(1, get_option('postal_wp_switch')); ?> />
-                <label for="postal_wp_switch">
-                    <?php esc_html_e('Use Postal API for sending emails', 'postal-mail'); ?>
-                </label>
-            </td>
-        </tr>
-        <?php
+        $value = get_option('postal_wp_from_address');
+        echo "<input type='text' name='postal_wp_from_address' value='" . esc_attr($value) . "' />";
     }
 
-    /**
-     * Register the plugin options in the WordPress database
-     */
-    public static function registerSettings()
+    // Add the new Email Sending setting field function
+    public static function displayEmailSendingSettingField()
     {
-        register_setting('postal_mail_options', 'postal_wp_host');
-        register_setting('postal_mail_options', 'postal_wp_secret_key');
-        register_setting('postal_mail_options', 'postal_wp_from_address');
-        register_setting('postal_mail_options', 'postal_wp_switch');
+        $value = get_option('postal_wp_switch');
+        echo "<input type='checkbox' name='postal_wp_switch' value='1'" . checked(1, $value, false) . " />";
     }
 }
 

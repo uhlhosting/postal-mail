@@ -1,23 +1,28 @@
 <?php
-
 /**
+ * Postal Mail
+ *
+ * @package     PostalMail
+ * @wordpress-plugin
  * Plugin Name: Postal Mail
  * Plugin URI: https://uhlhosting.ch/postal-mail
- * Description: A plugin to send emails through Postal Mail API
+ * Description: A plugin to send emails through the Postal Mail API
  * Version: 1.0.1
  * Author: Viorel-Cosmin Miron
  * Author URI: https://uhlhosting.ch
  * Text Domain: postal-mail
+ * Domain Path: /lang
  */
 
 namespace PostalWp;
 
 use AtelliTech\Postal\Client;
 use AtelliTech\Postal\SendMessage;
-use AtelliTech\Postal\Exception\PostalException;
 
 // Require the composer autoloader
 require_once plugin_dir_path(__FILE__) . 'vendor/autoload.php';
+// Include the settings.php file from the includes folder
+require_once plugin_dir_path(__FILE__) . 'includes/settings.php';
 
 if (!class_exists('AtelliTech\Postal\Client')) {
     // Show an error message in the admin panel if the library is not installed
@@ -27,9 +32,6 @@ if (!class_exists('AtelliTech\Postal\Client')) {
     return;
 }
 
-// Include the settings.php file from the includes folder
-require_once plugin_dir_path(__FILE__) . 'includes/settings.php';
-
 /**
  * Summary of PostalMail
  */
@@ -37,12 +39,12 @@ class PostalMail
 {
     /**
      * Summary of instance
-     * @var
+     * @var PostalMail|null
      */
     private static $instance = null;
     /**
      * Summary of client
-     * @var
+     * @var Client|null
      */
     private $client;
 
@@ -55,6 +57,19 @@ class PostalMail
         $host = sanitize_text_field(get_option('postal_wp_host')); // sanitize input
         $secretKey = sanitize_text_field(get_option('postal_wp_secret_key')); // sanitize input
         $this->client = new Client($host, $secretKey);
+    }
+
+    /**
+     * Summary of initialize
+     * Define and initialize constants for the plugin.
+     */
+    public function initialize()
+    {
+        // Define your constants here
+        define('POSTAL_MAIL_VERSION', '1.0.1');
+        define('POSTAL_MAIL_DEBUG', true);
+
+        // Additional initialization code can go here if needed
     }
 
     /**
@@ -101,18 +116,23 @@ class PostalMail
             // Add some recipients
             if (isset($params['to']) && is_array($params['to'])) {
                 foreach ($params['to'] as $recipient) {
-                    $message->to($recipient);
+                    $formattedRecipient = add_name_to_address($recipient);
+                    $message->to($formattedRecipient);
                 }
             } elseif (isset($params['to'])) {
-                $message->to($params['to']);
+                $formattedRecipient = add_name_to_address($params['to']);
+                $message->to($formattedRecipient);
             }
 
+            // Add BCC recipients with display names
             if (isset($params['bcc']) && is_array($params['bcc'])) {
                 foreach ($params['bcc'] as $bccRecipient) {
-                    $message->bcc($bccRecipient);
+                    $formattedBccRecipient = add_name_to_address($bccRecipient);
+                    $message->bcc($formattedBccRecipient);
                 }
             } elseif (isset($params['bcc'])) {
-                $message->bcc($params['bcc']);
+                $formattedBccRecipient = add_name_to_address($params['bcc']);
+                $message->bcc($formattedBccRecipient);
             }
 
             // Specify who the message should be from. This must be from a verified domain
@@ -126,14 +146,25 @@ class PostalMail
                 $message->subject($params['subject']);
             }
 
-            // Set the content for the e-mail
-            if (isset($params['plain_body'])) {
+            // Check if both plain and HTML bodies are provided
+            if (isset($params['plain_body']) && isset($params['html_body'])) {
+                $message->setParts([
+                    ['type' => 'text/plain', 'content' => $params['plain_body']],
+                    ['type' => 'text/html', 'content' => $params['html_body']],
+                ]);
+            } elseif (isset($params['plain_body'])) {
+                // Set the plain body
                 $message->plainBody($params['plain_body']);
-            }
-
-            if (isset($params['html_body'])) {
+            } elseif (isset($params['html_body'])) {
+                // Set the HTML body
                 $message->htmlBody($params['html_body']);
             }
+
+            // Assume $params['headers'] contains an array of custom headers like this:
+            $params['headers'] = array(
+                'X-Custom-Header' => 'UHL-Post',
+                'X-Mailer' => 'WordPress Mailer'
+            );
 
             // Add any custom headers
             if (isset($params['headers']) && is_array($params['headers'])) {
@@ -150,13 +181,12 @@ class PostalMail
             error_log(print_r($result, true));
 
             return true;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // If there was an error, log it and return false
             error_log('Postal API Error: ' . $e->getMessage());
             return false;
         }
     }
-
 
     /**
      * Summary of postal_mail
@@ -165,20 +195,71 @@ class PostalMail
      */
     public function postal_mail($args)
     {
-        // Check if email sending is enabled or disabled
+        // Fetch the option value from the WordPress database
         $postal_wp_switch = get_option('postal_wp_switch');
+
+        // Check if email sending is enabled or disabled
         if (!$postal_wp_switch) {
             // If it's disabled, use the default WordPress email function
-            return wp_mail($args['to'], $args['subject'], $args['message'], $args['headers'], $args['attachments']);
+            $headers = isset($args['headers']) ? $args['headers'] : [];
+            $attachments = isset($args['attachments']) ? $args['attachments'] : '';
+            return wp_mail($args['to'], $args['subject'], $args['message'], $headers, $attachments);
         }
+
+        // Ensure the 'headers' key is present in the $args array
+        $args['headers'] = isset($args['headers']) ? $args['headers'] : '';
+
+        // Ensure the 'attachments' key is present in the $args array
+        $args['attachments'] = isset($args['attachments']) ? $args['attachments'] : [];
+
 
         // Create the email parameters
         $params = [
             'subject' => sanitize_text_field($args['subject']),
             'to' => is_array($args['to']) ? array_map('sanitize_email', $args['to']) : [sanitize_email($args['to'])],
             'from' => sanitize_email(get_option('postal_wp_from_address')),
-            'html_body' => sanitize_textarea_field($args['message']),
         ];
+
+        // Check if the email is in HTML format
+        $is_html = strpos($args['headers'], 'Content-Type: text/html') !== false;
+
+        // If the email is in HTML format but doesn't contain the <html> tag, add it
+        if ($is_html && false === strpos($args['message'], '<html')) {
+            ob_start();
+            ?>
+            <!DOCTYPE html>
+            <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
+
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width,initial-scale=1">
+                <meta name="x-apple-disable-message-reformatting">
+                <title></title>
+                <!--[if mso]>
+                <noscript>
+                <xml>
+                <o:OfficeDocumentSettings>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+                </o:OfficeDocumentSettings>
+                </xml>
+                </noscript>
+                <![endif]-->
+            </head>
+
+            <body style="margin:0;padding:0;min-width:100%;background-color:#ffffff;">
+                <?php echo $args['message']; ?>
+            </body>
+
+            </html>
+            <?php
+            $params['html_body'] = ob_get_clean();
+        } elseif ($is_html) {
+            // Set the HTML body
+            $params['html_body'] = $args['message'];
+        } else {
+            // Set the plain text body
+            $params['plain_body'] = $args['message'];
+        }
 
         // Check if there are any headers and add them to the parameters
         if (!empty($args['headers'])) {
@@ -190,7 +271,21 @@ class PostalMail
                     $value = trim(sanitize_text_field($value));
                     switch ($key) {
                         case 'From':
-                            $params['from'] = sanitize_email($value);
+                            // Decode the "From" header using mb_decode_mimeheader
+                            $decodedHeader = mb_decode_mimeheader($value);
+                            // Extract the name and email from the decoded header
+                            $result = preg_match('/^(.*)<([^>]+)>$/', $decodedHeader, $matches);
+                            if ($result) {
+                                $name = trim($matches[1]);
+                                $email = trim($matches[2]);
+                                if (!empty($name) && !empty($email)) {
+                                    $params['from'] = add_name_to_address($email, $name);
+                                } else {
+                                    $params['from'] = sanitize_email($email);
+                                }
+                            } else {
+                                $params['from'] = sanitize_email($value);
+                            }
                             break;
                         case 'Reply-To':
                             $params['reply_to'] = sanitize_email($value);
@@ -222,9 +317,57 @@ class PostalMail
         // Send the email using the Postal API
         return $this->send_email_via_postal($params);
     }
+
+    public function enqueue_scripts($hook)
+    {
+        if ('settings_page_postal_mail_settings' != $hook) {
+            // Only loads the scripts on the Postal Mail settings page
+            return;
+        }
+
+        // Enqueue the JavaScript file
+        wp_enqueue_script('postal-mail', plugins_url('js/postal-mail.js', __FILE__), [], false, true);
+
+        // Enqueue the CSS file
+        wp_enqueue_style('postal-mail', plugins_url('css/postal-mail.css', __FILE__));
+    }
+
+    public function init()
+    {
+        PostalMailSettings::init();
+    }
 }
 
-// Override the default WordPress email function
+/**
+ * Add a display name part to an email address
+ *
+ * SpamAssassin doesn't like addresses in HTML messages that are missing display names (e.g., `foo@bar.org`
+ * instead of `"Foo Bar" <foo@bar.org>`).
+ *
+ * @param string $address
+ *
+ * @return string
+ */
+function add_name_to_address($address)
+{
+    // If it's just the address, without a display name
+    if (is_email($address)) {
+        // Check if the address contains a name part
+        $decodedAddress = mb_decode_mimeheader($address);
+        $result = preg_match('/^(.*)<([^>]+)>$/', $decodedAddress, $matches);
+        if ($result) {
+            $name = trim($matches[1]);
+            $email = trim($matches[2]);
+            // If both name and email are present, use the format "Name <email>"
+            if (!empty($name) && !empty($email)) {
+                $address = sprintf('"%s" <%s>', $name, $email);
+            }
+        }
+    }
+
+    return $address;
+}
+
 add_filter('wp_mail', function ($args) {
     $postalMail = PostalMail::getInstance();
     return $postalMail->postal_mail($args);
@@ -232,7 +375,7 @@ add_filter('wp_mail', function ($args) {
 
 // Load the plugin text domain for translation
 add_action('plugins_loaded', function () {
-    load_plugin_textdomain('postal-mail', false, dirname(plugin_basename(__FILE__)) . '/languages/');
+    load_plugin_textdomain('postal-mail', false, dirname(plugin_basename(__FILE__)) . '/lang/');
 });
 
 // Add a plugin action link to the plugin page
@@ -242,9 +385,15 @@ add_filter('plugin_action_links_' . plugin_basename(__FILE__), function ($links)
 });
 
 add_action('wp_ajax_postal_mail_test_email', function () {
+    $domain = $_SERVER['SERVER_NAME'];
+    $from_email = 'postmaster@' . $domain;
+
     $postalMail = PostalMail::getInstance();
     $result = $postalMail->postal_mail([
         'to' => get_option('admin_email'),
+        'from' => 'Postmaster <' . $from_email . '>',
+        // Add this line
+        'tag' => __('test email', 'postal-mail'),
         'subject' => __('Test email from Postal Mail', 'postal-mail'),
         'message' => __('This is a test email sent from the Postal Mail plugin.', 'postal-mail'),
     ]);
@@ -256,11 +405,7 @@ add_action('wp_ajax_postal_mail_test_email', function () {
     wp_die();
 });
 
-// Enqueue the JavaScript file
-add_action('admin_enqueue_scripts', function ($hook) {
-    if ('settings_page_postal_mail_settings' != $hook) {
-        // Only loads the script on the Postal Mail settings page
-        return;
-    }
-    wp_enqueue_script('postal-mail', plugins_url('js/postal-mail.js', __FILE__), ['jquery'], false, true);
-});
+// Enqueue the JavaScript and CSS files
+add_action('admin_enqueue_scripts', [PostalMail::getInstance(), 'enqueue_scripts']);
+
+add_action('init', [PostalMail::getInstance(), 'init']);
