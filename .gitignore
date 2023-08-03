@@ -1,0 +1,43 @@
+# Ignore everything in the root except the "plugins" directories.
+/*
+!/includes
+!/css
+!/js
+# Allow specific files
+!/uninstall.php
+!/.gitignore
+!/README.txt
+!/gpl-2.0.txt
+!/composer.json
+
+# Ignore build files and directories
+/build
+/dist
+
+# Ignore dependencies
+/node_modules
+/vendor
+
+# Ignore IDE and editor files
+/.idea
+/.vscode
+/.git
+/.github
+/.phpstorm.meta.php
+
+# Ignore logs and cache files
+/logs
+/cache
+
+# Ignore environment-specific files
+.env
+
+# Ignore package manager lock files
+package-lock.json
+yarn.lock
+composer.lock
+
+# Ignore miscellaneous files
+Thumbs.db
+.DS_Store
+sonar-project.properties

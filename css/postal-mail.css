@@ -1,56 +1,65 @@
-/* Light mode styles */
 :root {
-    --background-color: #FAFAFA;
-    /* Lighter gray for background */
+    --bg-color: #FAFAFA;
     --text-color: #212121;
-    /* Almost black for texts */
-    --border-color: #BDBDBD;
-    /* Light gray for borders */
-    --button-background-color: #303F9F;
-    /* Indigo for button background */
-    --button-text-color: #FFFFFF;
-    /* White for button text */
-    --button-hover-background-color: #3F51B5;
-    /* Slightly lighter indigo for button hover state */
+    --border-color: #0e69d5;
+    --btn-bg-color: #BF0A30;
+    --btn-text-color: #FFF;
+    --btn-hover-bg-color: #002868;
     --box-shadow-color: rgba(0, 0, 0, 0.1);
-    /* Light shadow for box shadow */
+    --checkbox-bg: #FFF;
+    --color-sec: #000;
+    --bg-overlay-1: rgba(0, 0, 0, 0.1);
+    --radius-btn: 5px;
+    --shadow-m: 0 0 10px var(--box-shadow-color);
 }
 
-/* Dark mode styles */
 @media (prefers-color-scheme: dark) {
     :root {
-        --background-color: #212121;
-        /* Almost black for background */
+        --bg-color: #212121;
         --text-color: #FAFAFA;
-        /* Almost white for texts */
-        --border-color: #757575;
-        /* Dark gray for borders */
-        --button-background-color: #448AFF;
-        /* Blue for button background */
-        --button-text-color: #212121;
-        /* Almost black for button text */
-        --button-hover-background-color: #2979FF;
-        /* Lighter blue for button hover state */
+        --border-color: #0e69d5;
+        --btn-bg-color: #FF5349;
+        --btn-text-color: #212121;
+        --btn-hover-bg-color: #1B4D3E;
         --box-shadow-color: #448AFF;
-        /* Blue for neon glow effect in box shadow */
+        --checkbox-bg: #212121;
+        --color-sec: #FAFAFA;
+        --bg-overlay-1: rgba(255, 255, 255, 0.1);
     }
 }
 
-/* Use the variables in your styles */
-.postal-mail-settings form {
-    content-visibility: auto;
-    /* This sets a placeholder size when the content is not yet rendered */
-    contain-intrinsic-size: 0px 200px;
-    max-width: 600px;
-    width: 100%;
-    padding: 20px;
-    background-color: var(--background-color);
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    box-shadow: 0 0 10px var(--box-shadow-color);
+.postal-mail-settings label {
+    color: var(--text-color);
 }
 
-/* Use the variables in your styles */
+.postal-mail-settings.parent {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 1fr;
+    grid-column-gap: 10px;
+    grid-row-gap: 10px;
+}
+
+.postal-mail-settings form.settings {
+    grid-area: 1 / 1 / 2 / 2;
+}
+
+.postal-mail-settings .button.postal-mail-button {
+    grid-area: 1 / 2 / 2 / 3;
+}
+
+.postal-mail-settings form {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 300px;
+    max-width: 1024px;
+    width: 100%;
+    padding: 20px;
+    background-color: var(--bg-color, #FAFAFA);
+    border: 1px solid var(--border-color, #0e69d5);
+    border-radius: 5px;
+    box-shadow: var(--box-shadow-color, rgba(0, 0, 0, 0.1));
+}
+
 .wrap.postal-mail-settings {
     display: flex;
     flex-direction: column;
@@ -60,25 +69,29 @@
 }
 
 .postal-mail-button {
-    padding: 10px 15px;
-    border: none;
-    background-color: var(--button-background-color);
-    color: var(--button-text-color);
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-    width: 100%;
-    display: inline-block;
-    text-align: center;
+    margin: 10px;
+    border: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    letter-spacing: .5px;
+    gap: var(--space-3xs);
+    border-radius: var(--radius-btn, 5px);
+    transition: all .5s;
+    color: var(--btn-text-color);
+    background: var(--btn-bg-color);
+    box-shadow: var(--shadow-m, 0 0 10px var(--box-shadow-color, rgba(0, 0, 0, 0.1)));
+    background-size: 100% 200%;
 }
 
 .postal-mail-button:disabled {
-    background-color: var(--border-color);
+    background-color: var(--border-color, #0e69d5);
     cursor: not-allowed;
 }
 
 .postal-mail-button:not(:disabled):hover {
-    background-color: var(--button-hover-background-color);
+    background-color: var(--btn-hover-bg-color, #002868);
 }
 
 .wrap.postal-mail-settings h2 {
@@ -94,22 +107,112 @@
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border-color, #0e69d5);
     border-radius: 3px;
-    background-color: var(--background-color);
-    color: var(--text-color);
+    background-color: var(--bg-color, #FAFAFA);
+    color: var(--text-color, #212121);
 }
 
-.postal-mail-settings input[type="checkbox"] {
-    margin-right: 5px;
+.postal-mail-settings .input[type="checkbox"] {
+    font: inherit;
+    color: currentColor;
+    width: 1.15em;
+    height: 1.15em;
+    border: 0.15em solid currentColor;
+    border-radius: 0.15em;
+    transform: translateY(-0.075em);
+    display: grid;
+    place-content: center;
+}
+
+.postal-mail-settings .input[type="checkbox"]::before {
+    content: "";
+    width: 0.65em;
+    height: 0.65em;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 1em 1em var(--form-control-color);
+}
+
+.postal-mail-settings .input[type="checkbox"]:checked::before {
+    transform: scale(1);
+}
+
+.postal-mail-settings .notice .div.notice {
+    padding: var(--space-s) var(--space-l);
+    margin: 5px 15px 2px;
+    border-radius: 9px;
+    background: rgba(255, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid #c3c4c7;
+    border-left-width: 6px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
+    font-size: var(--text-s);
+    line-height: 1.4;
+    color: var(--color-sec, #000);
+    position: relative;
+    text-align: left;
+}
+
+.postal-mail-settings .help-section {
+    margin-top: 20px;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.postal-mail-settings .help-section h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.postal-mail-settings .help-section ul {
+    list-style-type: disc;
+    margin-left: 20px;
 }
 
 .postal-mail-settings .notice {
-    padding: 20px;
+    border: 1px solid #ddd;
+    padding: 10px;
     margin-bottom: 20px;
-    border-left: 4px solid var(--border-color);
-    border-radius: 5px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    background-color: var(--background-color);
-    color: var(--text-color);
+}
+
+.postal-mail-settings .notice-success {
+    background-color: #dff0d8;
+    color: #3c763d;
+}
+
+@media only screen and (max-width: 600px) {
+    .wrap.postal-mail-settings {
+        padding: 10px;
+        flex-direction: column;
+    }
+
+    .postal-mail-settings form {
+        max-width: 100%;
+        padding: 10px;
+    }
+
+    .postal-mail-button {
+        width: 100%;
+        font-size: 14px;
+        padding: 8px 10px;
+    }
+
+    .postal-mail-settings input[type="text"],
+    .postal-mail-settings input[type="password"] {
+        width: 100%;
+        padding: 8px;
+    }
+
+    .wrap.postal-mail-settings h2 {
+        font-size: 20px;
+        padding: 5px 0 2px;
+    }
+
+    .postal-mail-settings .notice {
+        padding: 10px;
+        margin-bottom: 10px;
+    }
 }

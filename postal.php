@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Postal Mail
  *
@@ -94,12 +95,12 @@ class PostalMail
     }
 
     /**
-     * Summary of send_email_via_postal
+     * Summary of sendEmailViaPostal
      * @param array $params
      * @return bool
      */
-    // Modify the send_email_via_postal method
-    public function send_email_via_postal($params)
+    // Modify the sendEmailViaPostal method
+    public function sendEmailViaPostal($params)
     {
         $client = $this->getClient();
 
@@ -189,17 +190,17 @@ class PostalMail
     }
 
     /**
-     * Summary of postal_mail
+     * Summary of postalMail
      * @param mixed $args
      * @return mixed
      */
-    public function postal_mail($args)
+    public function postalMail($args)
     {
         // Fetch the option value from the WordPress database
-        $postal_wp_switch = get_option('postal_wp_switch');
+        $postalWpSwitch = get_option('postalWpSwitch');
 
         // Check if email sending is enabled or disabled
-        if (!$postal_wp_switch) {
+        if (!$postalWpSwitch) {
             // If it's disabled, use the default WordPress email function
             $headers = isset($args['headers']) ? $args['headers'] : [];
             $attachments = isset($args['attachments']) ? $args['attachments'] : '';
@@ -221,12 +222,12 @@ class PostalMail
         ];
 
         // Check if the email is in HTML format
-        $is_html = strpos($args['headers'], 'Content-Type: text/html') !== false;
+        $html = strpos($args['headers'], 'Content-Type: text/html') !== false;
 
         // If the email is in HTML format but doesn't contain the <html> tag, add it
-        if ($is_html && false === strpos($args['message'], '<html')) {
+        if ($html && false === strpos($args['message'], '<html')) {
             ob_start();
-            ?>
+?>
             <!DOCTYPE html>
             <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
 
@@ -251,9 +252,9 @@ class PostalMail
             </body>
 
             </html>
-            <?php
+<?php
             $params['html_body'] = ob_get_clean();
-        } elseif ($is_html) {
+        } elseif ($html) {
             // Set the HTML body
             $params['html_body'] = $args['message'];
         } else {
@@ -315,10 +316,10 @@ class PostalMail
         }
 
         // Send the email using the Postal API
-        return $this->send_email_via_postal($params);
+        return $this->sendEmailViaPostal($params);
     }
 
-    public function enqueue_scripts($hook)
+    public function enqueueScripts($hook)
     {
         if ('settings_page_postal_mail_settings' != $hook) {
             // Only loads the scripts on the Postal Mail settings page
@@ -363,7 +364,7 @@ function addNameToAddress($address, $name = null)
 
 add_filter('wp_mail', function ($args) {
     $postalMail = PostalMail::getInstance();
-    return $postalMail->postal_mail($args);
+    return $postalMail->postalMail($args);
 });
 
 // Load the plugin text domain for translation
@@ -373,18 +374,18 @@ add_action('plugins_loaded', function () {
 
 // Add a plugin action link to the plugin page
 add_filter('plugin_action_links_' . plugin_basename(__FILE__), function ($links) {
-    $links[] = '<a href="' . admin_url('options-general.php?page=postal_mail') . '">' . __('Settings', 'postal-mail') . '</a>';
+    $links[] = '<a href="' . admin_url('options-general.php?page=postalMail') . '">' . __('Settings', 'postal-mail') . '</a>';
     return $links;
 });
 
 add_action('wp_ajax_postal_mail_test_email', function () {
     $domain = $_SERVER['SERVER_NAME'];
-    $from_email = 'postmaster@' . $domain;
+    $email = 'postmaster@' . $domain;
 
     $postalMail = PostalMail::getInstance();
-    $result = $postalMail->postal_mail([
+    $result = $postalMail->postalMail([
         'to' => get_option('admin_email'),
-        'from' => 'Postmaster <' . $from_email . '>',
+        'from' => 'Postmaster <' . $email . '>',
         // Add this line
         'tag' => __('test email', 'postal-mail'),
         'subject' => __('Test email from Postal Mail', 'postal-mail'),
@@ -399,6 +400,6 @@ add_action('wp_ajax_postal_mail_test_email', function () {
 });
 
 // Enqueue the JavaScript and CSS files
-add_action('admin_enqueue_scripts', [PostalMail::getInstance(), 'enqueue_scripts']);
+add_action('admin_enqueue_scripts', [PostalMail::getInstance(), 'enqueueScripts']);
 
 add_action('init', [PostalMail::getInstance(), 'init']);
