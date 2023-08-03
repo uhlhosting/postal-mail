@@ -339,34 +339,27 @@ class PostalMail
 }
 
 /**
- * Add a display name part to an email address
+ * Add a display name part to an email address if provided.
  *
  * SpamAssassin doesn't like addresses in HTML messages that are missing display names (e.g., `foo@bar.org`
  * instead of `"Foo Bar" <foo@bar.org>`).
  *
- * @param string $address
+ * @param string $address The email address.
+ * @param string|null $name The display name. If null, the address is returned as is.
  *
- * @return string
+ * @return string The email address, optionally with a display name.
  */
-function add_name_to_address($address)
+function add_name_to_address($address, $name = null)
 {
     // If it's just the address, without a display name
-    if (is_email($address)) {
-        // Check if the address contains a name part
-        $decodedAddress = mb_decode_mimeheader($address);
-        $result = preg_match('/^(.*)<([^>]+)>$/', $decodedAddress, $matches);
-        if ($result) {
-            $name = trim($matches[1]);
-            $email = trim($matches[2]);
-            // If both name and email are present, use the format "Name <email>"
-            if (!empty($name) && !empty($email)) {
-                $address = sprintf('"%s" <%s>', $name, $email);
-            }
-        }
+    if (is_email($address) && $name !== null) {
+        // Add the name to the address in the format "Name <email>"
+        $address = sprintf('"%s" <%s>', $name, $address);
     }
 
     return $address;
 }
+
 
 add_filter('wp_mail', function ($args) {
     $postalMail = PostalMail::getInstance();
