@@ -116,22 +116,22 @@ class PostalMail
             // Add some recipients
             if (isset($params['to']) && is_array($params['to'])) {
                 foreach ($params['to'] as $recipient) {
-                    $formattedRecipient = add_name_to_address($recipient);
+                    $formattedRecipient = addNameToAddress($recipient);
                     $message->to($formattedRecipient);
                 }
             } elseif (isset($params['to'])) {
-                $formattedRecipient = add_name_to_address($params['to']);
+                $formattedRecipient = addNameToAddress($params['to']);
                 $message->to($formattedRecipient);
             }
 
             // Add BCC recipients with display names
             if (isset($params['bcc']) && is_array($params['bcc'])) {
                 foreach ($params['bcc'] as $bccRecipient) {
-                    $formattedBccRecipient = add_name_to_address($bccRecipient);
+                    $formattedBccRecipient = addNameToAddress($bccRecipient);
                     $message->bcc($formattedBccRecipient);
                 }
             } elseif (isset($params['bcc'])) {
-                $formattedBccRecipient = add_name_to_address($params['bcc']);
+                $formattedBccRecipient = addNameToAddress($params['bcc']);
                 $message->bcc($formattedBccRecipient);
             }
 
@@ -279,7 +279,7 @@ class PostalMail
                                 $name = trim($matches[1]);
                                 $email = trim($matches[2]);
                                 if (!empty($name) && !empty($email)) {
-                                    $params['from'] = add_name_to_address($email, $name);
+                                    $params['from'] = addNameToAddress($email, $name);
                                 } else {
                                     $params['from'] = sanitize_email($email);
                                 }
@@ -349,7 +349,7 @@ class PostalMail
  *
  * @return string The email address, optionally with a display name.
  */
-function add_name_to_address($address, $name = null)
+function addNameToAddress($address, $name = null)
 {
     // If it's just the address, without a display name
     if (is_email($address) && $name !== null) {
