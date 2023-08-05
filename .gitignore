@@ -22,7 +22,6 @@
 /.idea
 /.vscode
 /.git
-/.github
 /.phpstorm.meta.php
 
 # Ignore logs and cache files
