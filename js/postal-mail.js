@@ -1,3 +1,15 @@
+/**
+ * File: postal-mail.js
+ *
+ * This script handles the click event for the 'Send Test Email' button
+ * in the Postal Mail settings page. When the button is clicked, it sends
+ * an AJAX request to the server to send a test email.
+ *
+ * Dependencies: None
+ *
+ * @package PostalMail
+ */
+
 document.addEventListener('DOMContentLoaded', function () {
     var testEmailButton = document.querySelector('#test_email_button');
 
@@ -28,24 +40,11 @@ document.addEventListener('DOMContentLoaded', function () {
         // Extract the domain (hostname)
         var domain = link.hostname;
 
-        // Remove the subdomain if it exists
-        var parts = domain.split('.');
-        if (parts.length > 2) {
-            // Remove the first part (the subdomain)
-            parts.shift();
-            // Reassemble the domain
-            domain = parts.join('.');
-        }
-
         // Generate sender email
         var senderEmail = "postmaster@" + domain;
 
-        // Concatenate sender's name and email with a space in between
-        var sender = "Postmaster <" + senderEmail + ">";
-
-        alert(`Test email sent successfully from: ${sender}`);
+        alert(`Test email sent successfully from: ${senderEmail}`);
     }
-
 
     // Show an error message
     function showErrorMessage(error) {

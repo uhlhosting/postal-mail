@@ -107,13 +107,6 @@ class PostalMailSettings
             'postal_mail_api_settings'
         );
 
-        // Add the help section
-        add_settings_section(
-            'postal_mail_help_section',
-            __('Help', 'postal-mail'),
-            [self::class, 'displayHelpSection'],
-            'postal_mail_settings'
-        );
     }
 
     public static function displaySettingsPage()
@@ -126,23 +119,28 @@ class PostalMailSettings
             <h2 id="postal_mail_settings_title">
                 <?php echo esc_html(get_admin_page_title()); ?>
             </h2>
-            <form action="options.php" method="post" class="settings-grid" aria-labelledby="postal_mail_settings_title">
-                <?php
-                settings_fields('postal_mail_options');
-                do_settings_sections('postal_mail_settings');
-                submit_button();
-                ?>
-
-                <!-- Display the last 5 sent emails -->
-                <?php
-                self::displayLastSentEmails();
-                ?>
-
+            <form action="options.php" method="post" aria-labelledby="postal_mail_settings_title">
+                <div class="settings-grid">
+                    <div class="left-column">
+                        <?php
+                        settings_fields('postal_mail_options');
+                        do_settings_sections('postal_mail_settings');
+                        submit_button();
+                        ?>
+                    </div>
+                    <div class="right-column">
+                        <button id="test_email_button" class="button button-primary" aria-label="<?php esc_html_e('Send Test Email', 'postal-mail'); ?>">
+                            <?php esc_html_e('Send Test Email', 'postal-mail'); ?>
+                        </button>
+                        <div class="last-emails">
+                            <?php echo self::getLastFiveEmails(); ?>
+                        </div>
+                        <div class="help-section">
+                            <?php self::displayHelpSection(); ?>
+                        </div>
+                    </div>
+                </div>
             </form>
-            <button id="test_email_button" class="postal-mail-button" aria-label="<?php esc_html_e('Send Test Email', 'postal-mail'); ?>">
-                <?php esc_html_e('Send Test Email', 'postal-mail'); ?>
-            </button>
-            <?php echo self::getLastFiveEmails(); // Display last 5 emails ?>
         </div>
         <?php
     }
@@ -183,8 +181,7 @@ class PostalMailSettings
 
     public static function displayHelpSection()
     {
-        echo '<div class="help-section" role="region" aria-label="Help Section">
-        <h3>' . esc_html__('Help', 'postal-mail') . '</h3>
+        echo '<h3>' . esc_html__('Help', 'postal-mail') . '</h3>
         <p>' . esc_html__('This section provides more information about each of the settings.', 'postal-mail') . '</p>
         <ul>
             <li>
@@ -203,8 +200,7 @@ class PostalMailSettings
                 <strong>Email Sending</strong>:
                 ' . esc_html__('Whether or not to enable email sending.', 'postal-mail') . '
             </li>
-        </ul>
-        </div>';
+        </ul>';
     }
 
     // Display the last 5 sent emails from the database
@@ -224,8 +220,8 @@ class PostalMailSettings
         }
     }
 
-    // ... Other functions ...
-
 }
 
 PostalMailSettings::init();
+
+

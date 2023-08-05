@@ -357,9 +357,8 @@ add_action('admin_enqueue_scripts', function ($hook) {
         // Only loads the scripts on the Postal Mail settings page
         return;
     }
-
     // Enqueue the JavaScript file
-    wp_enqueue_script('postal-mail-js', plugins_url('js/postal-mail.js', __FILE__), [], false, true);
+    wp_enqueue_script('postal-mail-js', plugin_dir_url(__FILE__) . 'js/postal-mail.js', array('jquery'), '1.0', true);
 
     // Enqueue the CSS file
     wp_enqueue_style('postal-mail-style', plugins_url('css/postal-mail.css', __FILE__));

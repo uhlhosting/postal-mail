@@ -1,3 +1,10 @@
+/*
+* Prefixed by https://autoprefixer.github.io
+* PostCSS: v8.4.14,
+* Autoprefixer: v10.4.7
+* Browsers: last 4 version
+*/
+
 /* Light Mode Styles */
 @media (prefers-color-scheme: light) {
     :root {
@@ -8,26 +15,27 @@
         --oxy-active-text: white;
         --oxy-hover: #000000;
         --oxy-dark-transparent: rgba(0, 0, 0, 0.25);
-        --oxy-destructive: #ff5656;
+        --oxy-destructive: #00ff11;
         --oxy-light-text: white;
         --oxy-text-color: var(--oxy-dark);
         --oxy-btn-text-color: white;
         --oxy-btn-bg-color: var(--oxy-primary-color, #007bff);
         --oxy-btn-hover-bg-color: var(--oxy-hover);
         --oxy-box-shadow-color: var(--oxy-dark-transparent);
-        --oxy-border-color: var(--oxy-primary-color, #007bff);
+        --oxy-border-color: var(--oxy-primary-color, #00ff11);
+        --oxy-border-radius: 9px;
         --oxy-bg-color: #FAFAFA;
         --oxy-form-control-color: var(--oxy-dark);
         --oxy-color-sec: #000;
         --oxy-bg-overlay-1: rgba(0, 0, 0, 0.1);
         --oxy-radius-btn: 5px;
-        --oxy-shadow-m: 0 0 10px var(--oxy-box-shadow-color, rgba(0, 0, 0, 0.1));
+        --oxy-shadow-m: 0 0 10px var(--oxy-box-shadow-color, rgba(47, 233, 90, 0.476));
         --oxy-space-s: 5px;
         --oxy-space-l: 15px;
         --oxy-text-s: 14px;
         --oxy-space-3xs: 5px;
         --oxy-text-color: var(--oxy-dark);
-        --oxy-primary-color: #007bff;
+        --oxy-primary-color: #00ff11;
         /* Add other light mode specific styles here */
     }
 }
@@ -42,7 +50,7 @@
         --oxy-active-text: white;
         --oxy-hover: #000000;
         --oxy-dark-transparent: rgba(0, 0, 0, 0.25);
-        --oxy-destructive: #ff5656;
+        --oxy-destructiv: #ff5656;
         --oxy-light-text: white;
         --oxy-text-color: var(--oxy-light-text);
         --oxy-btn-text-color: var(--oxy-dark);
@@ -50,136 +58,106 @@
         --oxy-btn-hover-bg-color: #1B4D3E;
         --oxy-box-shadow-color: #448AFF;
         --oxy-border-color: var(--oxy-primary-color, #FF5349);
-        --oxy-bg-color: #212121;
+        --oxy-border-radius: 9px;
+        --oxy-bg-color: #1d2327;
         --oxy-form-control-color: var(--oxy-light-text);
         --oxy-color-sec: #FAFAFA;
         --oxy-bg-overlay-1: rgba(255, 255, 255, 0.1);
         --oxy-radius-btn: 5px;
-        --oxy-shadow-m: 0 0 10px var(--oxy-box-shadow-color, #448AFF);
+        --oxy-shadow-m: 0 0 10px var(--oxy-box-shadow-color, #00ff11);
         --oxy-space-s: 5px;
         --oxy-space-l: 15px;
         --oxy-text-s: 14px;
         --oxy-space-3xs: 5px;
-        --oxy-text-color: var(--oxy-light-text);
         --oxy-primary-color: #FF5349;
         /* Add other dark mode specific styles here */
     }
 }
 
-/* Component Styles */
+h1,
+h2,
+h3 {
+    color: var(--oxy-text-color);
+    font-size: auto;
+    line-height: 1.3;
+}
+
+.wrap.postal-mail-settings .settings-grid {
+    /* color: var(--oxy-text-color); */
+    display: grid;
+    -ms-grid-columns: 60% 40%;
+    grid-template-columns: 60% 40%;
+
+}
+
+.wrap.postal-mail-settings .left-column,
+.wrap.postal-mail-settings .right-column,
+.wrap.postal-mail-settings .help-section {
+    background-color: var(--oxy-bg-color, #FAFAFA);
+    padding: 20px;
+    border: 1px solid var(--oxy-border-color, #0e69d5);
+    border-radius: var(--oxy-border-radius, 9px);
+}
+
+.wrap.postal-mail-settings .left-column {
+    -ms-grid-column: 1;
+    -ms-grid-column-span: 1;
+    grid-column: 1 / 2;
+}
+
+.wrap.postal-mail-settings .right-column,
+.wrap.postal-mail-settings .help-section {
+    -ms-grid-column: 2;
+    -ms-grid-column-span: 1;
+    grid-column: 2 / 3;
+}
+
+#wpfooter {
+    visibility: hidden;
+    display: none;
+}
+
+/* Rest of the CSS */
 .postal-mail-settings label {
     color: var(--oxy-text-color);
 }
 
-.postal-mail-settings.parent {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    grid-template-rows: 1fr;
-    grid-column-gap: 10px;
-    grid-row-gap: 10px;
-}
-
-.postal-mail-settings form.settings {
-    grid-area: 1 / 1 / 2 / 2;
-}
-
-.postal-mail-settings .button.postal-mail-button {
-    grid-area: 1 / 2 / 2 / 3;
-}
-
 .postal-mail-settings form {
-    content-visibility: auto;
-    contain-intrinsic-size: 0 300px;
-    max-width: 1024px;
     width: 100%;
-    padding: 20px;
     background-color: var(--oxy-bg-color, #FAFAFA);
-    border: 1px solid var(--oxy-border-color, #0e69d5);
-    border-radius: var(--oxy-border-radius, 5px);
+    -webkit-box-shadow: var(--oxy-box-shadow-color, rgba(0, 0, 0, 0.1));
     box-shadow: var(--oxy-box-shadow-color, rgba(0, 0, 0, 0.1));
+
 }
 
-.form-table {
-    border-collapse: collapse;
-    margin-top: 0.5em;
-    width: 100%;
-    clear: both;
-}
-
-.form-table,
-.form-table td,
-.form-table td p,
-.form-table th {
-    font-size: 14px;
-}
-
-.form-table td {
-    margin-bottom: 9px;
-    padding: 15px 10px;
-    line-height: 1.3;
-    vertical-align: middle;
-}
 
 .form-table th,
 .form-wrap label {
     color: var(--oxy-text-color, #FAFAFA);
-    font-weight: 400;
-    text-shadow: none;
-    vertical-align: baseline;
-}
-
-.form-table th {
-    vertical-align: top;
-    text-align: left;
-    padding: 20px 10px 20px 0;
-    width: 200px;
-    line-height: 1.3;
-    font-weight: 600;
-}
-
-.form-table .td-full,
-.form-table th.th-full {
-    width: auto;
-    padding: 20px 10px 20px 0;
-    font-weight: 400;
-}
-
-.form-table td p {
-    margin-top: 4px;
-    margin-bottom: 0;
-}
-
-.form-table .date-time-doc {
-    margin-top: 1em;
-}
-
-.form-table p.timezone-info {
-    margin: 1em 0;
-    display: flex;
-    flex-direction: column;
-}
-
-.wrap.postal-mail-settings {
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    padding: 20px;
-    color: var(--oxy-text-color);
 }
 
 .postal-mail-button {
     margin: 10px;
     border: 0;
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
     justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
     align-items: center;
     font-weight: 600;
     letter-spacing: 0.5px;
     gap: var(--oxy-space-3xs);
     border-radius: var(--oxy-radius-btn, 5px);
+    -webkit-transition: all 0.5s;
+    -o-transition: all 0.5s;
     transition: all 0.5s;
     color: var(--oxy-btn-text-color);
     background: var(--oxy-btn-bg-color);
+    -webkit-box-shadow: var(--oxy-shadow-m, 0 0 10px var(--oxy-box-shadow-color, rgba(0, 0, 0, 0.1)));
     box-shadow: var(--oxy-shadow-m, 0 0 10px var(--oxy-box-shadow-color, rgba(0, 0, 0, 0.1)));
     background-size: 100% 200%;
 }
@@ -193,17 +171,18 @@
     background-color: var(--oxy-btn-hover-bg-color, #002868);
 }
 
-.wrap.postal-mail-settings h2 {
-    font-size: 23px;
-    font-weight: 400;
-    margin: 0;
-    padding: 9px 0 4px;
+.wrap.postal-mail-settings {
+    color: var(--oxy-text-color);
+    padding: var(--oxy-space-s);
+    margin: var(--oxy-space-l);
+    font-size: inherit;
     line-height: 1.3;
+    background: var(--oxy-bg-color, #FAFAFA);
+
 }
 
 .postal-mail-settings input[type="text"],
 .postal-mail-settings input[type="password"] {
-    width: 100%;
     padding: 10px;
     margin-bottom: 10px;
     border: 1px solid var(--oxy-border-color, #0e69d5);
@@ -219,7 +198,10 @@
     height: 1.15em;
     border: 0.15em solid currentColor;
     border-radius: 0.15em;
+    -webkit-transform: translateY(-0.075em);
+    -ms-transform: translateY(-0.075em);
     transform: translateY(-0.075em);
+    display: -ms-grid;
     display: grid;
     place-content: center;
 }
@@ -228,50 +210,39 @@
     content: "";
     width: 0.65em;
     height: 0.65em;
+    -webkit-transform: scale(0);
+    -ms-transform: scale(0);
     transform: scale(0);
+    -webkit-transition: 120ms -webkit-transform ease-in-out;
+    transition: 120ms -webkit-transform ease-in-out;
+    -o-transition: 120ms transform ease-in-out;
     transition: 120ms transform ease-in-out;
+    transition: 120ms transform ease-in-out, 120ms -webkit-transform ease-in-out;
+    -webkit-box-shadow: inset 1em 1em var(--oxy-form-control-color);
     box-shadow: inset 1em 1em var(--oxy-form-control-color);
 }
 
 .postal-mail-settings .input[type="checkbox"]:checked::before {
+    -webkit-transform: scale(1);
+    -ms-transform: scale(1);
     transform: scale(1);
 }
 
 .postal-mail-settings .notice .div.notice {
     padding: var(--oxy-space-s) var(--oxy-space-l);
     margin: 5px 15px 2px;
-    border-radius: 9px;
+    border-radius: var(--oxy-border-radius);
     background: rgba(255, 0, 0, 0.1);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
-    border: 1px solid #c3c4c7;
     border-left-width: 6px;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
     font-size: var(--oxy-text-s);
     line-height: 1.4;
     color: var(--oxy-color-sec, #000);
     position: relative;
     text-align: left;
-}
-
-.postal-mail-settings .help-section {
-    margin-top: 20px;
-    border-top: 1px solid var(--oxy-bg-color, #FFF);
-    padding-top: 10px;
-    display: flex;
-    justify-content: space-between;
-}
-
-.postal-mail-settings .help-section h3 {
-    font-size: 16px;
-    margin-bottom: 10px;
-}
-
-.postal-mail-settings .help-section ul {
-    list-style-type: disc;
-    margin-left: 20px;
-}
-
-.postal-mail-settings .notice {
     border: 1px solid var(--oxy-bg-color, #fff);
     padding: 10px;
     margin-bottom: 20px;
@@ -279,14 +250,27 @@
 
 .postal-mail-settings .notice-success {
     background-color: var(--oxy-bg-color, #fff);
-    color: #3c763d;
-    border-radius: 9px;
+    color: var(--oxy-destructiv, #ff5656);
+    border-radius: var(--oxy-border-radius);
+}
+
+#wpcontent {
+    background: var(--oxy-bg-color);
+    height: 100%;
+    padding-left: 0px;
+}
+
+#wpwrap {
+    background: var(--oxy-bg-color);
 }
 
 /* Responsive Styles */
 @media only screen and (max-width: 600px) {
     .wrap.postal-mail-settings {
         padding: 10px;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
         flex-direction: column;
     }
 
@@ -308,12 +292,17 @@
     }
 
     .wrap.postal-mail-settings h2 {
-        font-size: 20px;
+        font-size: 15px;
         padding: 5px 0 2px;
     }
 
     .postal-mail-settings .notice {
         padding: 10px;
         margin-bottom: 10px;
+    }
+
+    #wpfooter {
+        visibility: hidden;
+        display: none;
     }
 }
