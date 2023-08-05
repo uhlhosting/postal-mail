@@ -213,11 +213,6 @@ h3 {
     -webkit-transform: scale(0);
     -ms-transform: scale(0);
     transform: scale(0);
-    -webkit-transition: 120ms -webkit-transform ease-in-out;
-    transition: 120ms -webkit-transform ease-in-out;
-    -o-transition: 120ms transform ease-in-out;
-    transition: 120ms transform ease-in-out;
-    transition: 120ms transform ease-in-out, 120ms -webkit-transform ease-in-out;
     -webkit-box-shadow: inset 1em 1em var(--oxy-form-control-color);
     box-shadow: inset 1em 1em var(--oxy-form-control-color);
 }
@@ -235,7 +230,6 @@ h3 {
     background: rgba(255, 0, 0, 0.1);
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
-    border-left-width: 6px;
     -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
     font-size: var(--oxy-text-s);
@@ -244,7 +238,6 @@ h3 {
     position: relative;
     text-align: left;
     border: 1px solid var(--oxy-bg-color, #fff);
-    padding: 10px;
     margin-bottom: 20px;
 }
 
