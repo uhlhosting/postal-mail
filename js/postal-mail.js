@@ -1,57 +1,63 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const testEmailButton = document.querySelector('#test_email_button');
+    var testEmailButton = document.querySelector('#test_email_button');
 
+    // Disable the button during AJAX request
     function disableButton() {
-        console.log('Disabling button...');
         testEmailButton.disabled = true;
     }
 
+    // Enable the button after AJAX request is complete
     function enableButton() {
-        console.log('Enabling button...');
         testEmailButton.disabled = false;
         testEmailButton.innerText = 'Send Test Email'; // Revert the button text
     }
 
+    // Show a loading spinner while AJAX request is in progress
     function showLoadingIndicator() {
-        console.log('Showing loading indicator...');
         testEmailButton.innerText = 'Sending...';
     }
 
+    // Show a success message
     function showSuccessMessage() {
-        console.log('Showing success message...');
         // Create a new a element
-        const link = document.createElement('a');
+        var link = document.createElement('a');
 
         // Set the href to the ajaxurl
         link.href = ajaxurl;
 
         // Extract the domain (hostname)
-        let domain = link.hostname;
-        const parts = domain.split('.');
+        var domain = link.hostname;
+
+        // Remove the subdomain if it exists
+        var parts = domain.split('.');
         if (parts.length > 2) {
+            // Remove the first part (the subdomain)
             parts.shift();
+            // Reassemble the domain
             domain = parts.join('.');
         }
 
-        const senderEmail = "postmaster@" + domain;
-        const sender = "Postmaster <" + senderEmail + ">";
+        // Generate sender email
+        var senderEmail = "postmaster@" + domain;
 
-        alert(`Test email sent successfully from: `);
+        // Concatenate sender's name and email with a space in between
+        var sender = "Postmaster <" + senderEmail + ">";
+
+        alert(`Test email sent successfully from: ${sender}`);
     }
 
+
+    // Show an error message
     function showErrorMessage(error) {
-        console.log('Showing error message...');
+        // Implement your error message display here, for example:
         alert('Error: ' + error);
     }
 
-    function handleTestEmailButtonClick(event) {
-        const target = event.target;
-
-        if (!target.matches('#test_email_button')) {
-            return;
-        }
-
+    testEmailButton.addEventListener('click', function () {
+        // Disable the button during AJAX request
         disableButton();
+
+        // Show a loading indicator while the request is in progress
         showLoadingIndicator();
 
         fetch(ajaxurl, {
@@ -61,20 +67,24 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: 'action=postal_mail_test_email',
         })
-            .then(async (response) => {
+            .then(function (response) {
+                // Re-enable the button after AJAX request is complete
                 enableButton();
 
+                // Check the response status and handle accordingly
                 if (response.ok) {
                     showSuccessMessage();
                 } else {
+                    // Handle HTTP errors
                     throw new Error('Failed to send test email.');
                 }
             })
-            .catch((error) => {
+            .catch(function (error) {
+                // Re-enable the button after AJAX request is complete
                 enableButton();
+
+                // Show the error message
                 showErrorMessage(error.message);
             });
-    }
-
-    document.addEventListener('click', handleTestEmailButtonClick);
+    });
 });
