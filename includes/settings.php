@@ -48,7 +48,7 @@ class PostalMailSettings
         $results = $wpdb->get_results("SELECT * FROM $table_name ORDER BY time DESC LIMIT 5");
 
         $output = '<div><h2>Last 5 Emails</h2><ul>';
-        foreach($results as $row) {
+        foreach ($results as $row) {
             $output .= '<li>Email: ' . $row->email . ', Message ID: ' . $row->message_id . ', Sent at: ' . $row->time . '</li>';
         }
         $output .= '</ul></div>';
