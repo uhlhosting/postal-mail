@@ -32,15 +32,7 @@ class PostalMailSettings
             [self::class, 'displaySettingsPage']
         );
     }
-    /**
-     * Retrieves the last five emails from the database.
-     *
-     * Uses the global $wpdb object to query the 'postal' table and retrieve the
-     * last five rows ordered by the 'time' column in descending order. Formats
-     * the results into an HTML string and returns it.
-     *
-     * @return string The HTML string containing the last five emails.
-     */
+
     public static function getLastFiveEmails()
     {
         global $wpdb;
@@ -49,13 +41,13 @@ class PostalMailSettings
 
         $output = '<div><h2>Last 5 Emails</h2><ul>';
         foreach ($results as $row) {
-            $output .= '<li>Email: ' . $row->email . ', Message ID: ' . $row->message_id . ', Sent at: ' . $row->time . '</li>';
+            $output .= '<li>Email: ' . $row->email . ', Message ID: ' . $row->message_id
+                     . ', Sent at: ' . $row->time . '</li>';
         }
         $output .= '</ul></div>';
 
         return $output;
     }
-
 
     public static function registerAndSanitizeSettings()
     {
@@ -98,7 +90,6 @@ class PostalMailSettings
             'postal_mail_api_settings'
         );
 
-        // Add the new Email Sending setting field
         add_settings_field(
             'postal_wp_switch',
             __('Email Sending', 'postal-mail'),
@@ -106,7 +97,6 @@ class PostalMailSettings
             'postal_mail_settings',
             'postal_mail_api_settings'
         );
-
     }
 
     public static function displaySettingsPage()
@@ -129,7 +119,8 @@ class PostalMailSettings
                         ?>
                     </div>
                     <div class="right-column">
-                        <button id="test_email_button" class="button button-primary" aria-label="<?php esc_html_e('Send Test Email', 'postal-mail'); ?>">
+                        <button id="test_email_button" class="button button-primary"
+                                aria-label="<?php esc_html_e('Send Test Email', 'postal-mail'); ?>">
                             <?php esc_html_e('Send Test Email', 'postal-mail'); ?>
                         </button>
                         <div class="last-emails">
@@ -147,36 +138,38 @@ class PostalMailSettings
 
     public static function displayApiSettingsSection()
     {
-        echo '<div class="api-settings-text" role="region" aria-label="API Settings">' .
-            esc_html__('Enter your Postal API settings below:', 'postal-mail') .
-            '</div>';
+        echo '<div class="api-settings-text" role="region" aria-label="API Settings">'
+           . esc_html__('Enter your Postal API settings below:', 'postal-mail')
+           . '</div>';
     }
 
     public static function displayHostSettingField()
     {
         $value = get_option('postal_wp_host');
-        echo "<input type='text' name='postal_wp_host' value='" . esc_attr($value) . "' aria-label='Postal API Host' />";
+            echo "<input type='text' name='postal_wp_host' value='" . esc_attr($value)
+            . "' aria-label='Postal API Host' />";
     }
 
     public static function displaySecretKeySettingField()
     {
         $value = get_option('postal_wp_secret_key');
-        echo "<input type='text' name='postal_wp_secret_key' value='" . esc_attr($value) . "' aria-label='Postal API Secret Key' />";
+        echo "<input type='text' name='postal_wp_secret_key' value='" . esc_attr($value)
+           . "' aria-label='Postal API Secret Key' />";
     }
 
     public static function displayFromAddressSettingField()
     {
         $value = get_option('postal_wp_from_address');
-        echo "<input type='text' name='postal_wp_from_address' value='" . esc_attr($value) . "' aria-label='From Address' />";
+        echo "<input type='text' name='postal_wp_from_address' value='" . esc_attr($value)
+           . "' aria-label='From Address' />";
     }
 
-    // Add the new Email Sending setting field function
     public static function displayEmailSendingSettingField()
     {
         $value = get_option('postal_wp_switch');
-        echo "<div class='checkbox-wrapper'><input type='checkbox' name='postal_wp_switch' value='1'" .
-            checked(1, $value, false) .
-            " aria-label='Email Sending' /></div>";
+        echo "<div class='checkbox-wrapper'><input type='checkbox' name='postal_wp_switch' value='1'"
+           . checked(1, $value, false)
+           . " aria-label='Email Sending' /></div>";
     }
 
     public static function displayHelpSection()
@@ -203,7 +196,6 @@ class PostalMailSettings
         </ul>';
     }
 
-    // Display the last 5 sent emails from the database
     public static function displayLastSentEmails()
     {
         global $wpdb;
@@ -214,14 +206,12 @@ class PostalMailSettings
             echo '<h3>Last 5 Sent Emails</h3>';
             echo '<ul>';
             foreach ($emails as $email) {
-                echo '<li>Email: ' . $email->email . ', Time: ' . $email->time . ', Message ID: ' . $email->message_id . ', Token: ' . $email->token . '</li>';
+                echo '<li>Email: ' . $email->email . ', Time: ' . $email->time
+                   . ', Message ID: ' . $email->message_id . ', Token: ' . $email->token . '</li>';
             }
             echo '</ul>';
         }
     }
-
 }
 
 PostalMailSettings::init();
-
-

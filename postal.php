@@ -26,7 +26,8 @@ use AtelliTech\Postal\Client;
 use AtelliTech\Postal\SendMessage;
 use AtelliTech\Postal\Exception\PostalException;
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php'; // Composer autoloader
+require_once __DIR__ . '/includes/settings.php';
 
 if (!class_exists('AtelliTech\Postal\Client')) {
     // Show an error message in the admin panel if the library is not installed
@@ -35,9 +36,6 @@ if (!class_exists('AtelliTech\Postal\Client')) {
     });
     return;
 }
-
-// Include or require the settings.php file
-require_once plugin_dir_path(__FILE__) . 'includes/settings.php';
 
 /**
  * Summary of PostalMail
@@ -363,3 +361,4 @@ add_action('admin_enqueue_scripts', function ($hook) {
     // Enqueue the CSS file
     wp_enqueue_style('postal-mail-style', plugins_url('css/postal-mail.css', __FILE__));
 });
+
