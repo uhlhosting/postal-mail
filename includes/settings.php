@@ -214,4 +214,29 @@ class PostalMailSettings
     }
 }
 
+// Outside the class and namespace, at the end of the `settings.php` file
+
+add_action('after_plugin_row_' . plugin_basename(__FILE__), 'postal_add_important_notice', 0, 3);
+
+/**
+ * Display an important notice below the plugin details.
+ *
+ * @param string $plugin_file The plugin file name.
+ * @param array  $plugin_data The plugin file data.
+ * @param string $status      The plugin file status.
+ */
+function postal_add_important_notice($plugin_file, $plugin_data, $status) {
+    ?>
+    <tr class="plugin-update-tr active">
+        <td colspan="3" class="plugin-update colspanchange">
+            <div class="update-message notice inline notice-warning notice-alt">
+                <p><strong>IMPORTANT NOTICE:</strong> From this Version[2.2.4] update onwards, the plugin and its support will be handled by WP Swings.
+                    We are going to discontinue the ORG version of this plugin. We will be providing support to our premium users only for six months. We are migrating this plugin on WooCommerce. Please Visit <a href="https://wpswings.com" target="_blank">WP Swings</a> for all your WordPress/WooCommerce solutions.</p>
+            </div>
+        </td>
+    </tr>
+    <?php
+}
+
+
 PostalMailSettings::init();

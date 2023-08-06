@@ -205,8 +205,7 @@ class PostalMail
         // Check if the message is provided and not null
         if (isset($args['message']) && !is_null($args['message'])) {
             $plain_body = sanitize_text_field(strip_tags($args['message']));
-            $html_body = '<html><body>' . sanitize_textarea_field($args['message']) . '</body></html>';
-
+            $html_body = $args['message']; // Directly assign the HTML content without sanitization or additional tags
             $params['plain_body'] = $plain_body;
             $params['html_body'] = $html_body;
         }
