@@ -82,12 +82,20 @@ h3 {
     line-height: 1.3;
 }
 
-.wrap.postal-mail-settings .settings-grid {
-    /* color: var(--oxy-text-color); */
-    display: grid;
-    -ms-grid-columns: 60% 40%;
-    grid-template-columns: 60% 40%;
+.wrap.postal-mail-settings {
+    width: 98%;
+    height: 100%;
+    /* Take up the full available height */
+}
 
+.wrap.postal-mail-settings .settings-grid {
+    display: grid;
+    grid-template-columns: 60% 40%;
+    /* 60% for left and 40% for right */
+    height: 80vh;
+    /* Take up the full available height of the parent */
+    align-items: stretch;
+    /* Stretch grid items to fill available space */
 }
 
 .wrap.postal-mail-settings .left-column,
@@ -97,20 +105,20 @@ h3 {
     padding: 20px;
     border: 1px solid var(--oxy-border-color, #0e69d5);
     border-radius: var(--oxy-border-radius, 9px);
+    box-sizing: border-box;
+    /* Include padding and border in element's total width and height */
 }
 
 .wrap.postal-mail-settings .left-column {
-    -ms-grid-column: 1;
-    -ms-grid-column-span: 1;
     grid-column: 1 / 2;
 }
 
 .wrap.postal-mail-settings .right-column,
 .wrap.postal-mail-settings .help-section {
-    -ms-grid-column: 2;
-    -ms-grid-column-span: 1;
     grid-column: 2 / 3;
 }
+
+
 
 #wpfooter {
     visibility: hidden;
@@ -129,7 +137,6 @@ h3 {
     box-shadow: var(--oxy-box-shadow-color, rgba(0, 0, 0, 0.1));
 
 }
-
 
 .form-table th,
 .form-wrap label {
@@ -259,12 +266,9 @@ h3 {
 
 /* Responsive Styles */
 @media only screen and (max-width: 600px) {
-    .wrap.postal-mail-settings {
-        padding: 10px;
-        -webkit-box-orient: vertical;
-        -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-        flex-direction: column;
+    .wrap.postal-mail-settings .settings-grid {
+        grid-template-columns: 1fr;
+        /* Stack columns on small screens */
     }
 
     .postal-mail-settings form {
@@ -274,7 +278,8 @@ h3 {
 
     .postal-mail-button {
         width: 100%;
-        font-size: 14px;
+        font-size: 1rem;
+        /* Use relative units for font size */
         padding: 8px 10px;
     }
 
@@ -285,7 +290,8 @@ h3 {
     }
 
     .wrap.postal-mail-settings h2 {
-        font-size: 15px;
+        font-size: 1rem;
+        /* Use relative units for font size */
         padding: 5px 0 2px;
     }
 
