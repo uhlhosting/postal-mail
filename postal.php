@@ -27,17 +27,16 @@ use AtelliTech\Postal\SendMessage;
 use AtelliTech\Postal\Exception\PostalException;
 
 require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/includes/settings.php';
 
 if (!class_exists('AtelliTech\Postal\Client')) {
     // Show an error message in the admin panel if the library is not installed
     add_action('admin_notices', function () {
-        echo '<div class="error"><p>The Postal API library is not installed. Please install it by running composer install in the plugin directory.</p></div>';
+        echo '<div class="error"><p>The Postal API library is not installed. '
+        . 'Please install it by running composer install in the plugin directory.</p></div>';
     });
     return;
 }
-
-// Include or require the settings.php file
-require_once plugin_dir_path(__FILE__) . 'includes/settings.php';
 
 /**
  * Summary of PostalMail
@@ -200,7 +199,9 @@ class PostalMail
         // Create the email parameters
         $params = [
             'subject' => sanitize_text_field($args['subject']),
-            'to' => is_array($args['to']) ? array_map('add_name_to_address', array_map('sanitize_email', $args['to'])) : [add_name_to_address(sanitize_email($args['to']))],
+            'to' => is_array($args['to'])
+                ? array_map('add_name_to_address', array_map('sanitize_email', $args['to']))
+                : [add_name_to_address(sanitize_email($args['to']))],
             'from' => sanitize_email(get_option('postal_wp_from_address')),
         ];
 
@@ -233,6 +234,10 @@ class PostalMail
                             break;
                         case 'BCC':
                             $params['bcc'] = array_map('sanitize_email', explode(',', $value));
+                            break;
+                        default:
+                            // Add unexpected or custom headers to custom_headers
+                            $params['custom_headers'][$key] = sanitize_text_field($value);
                             break;
                     }
                 }
@@ -332,7 +337,9 @@ add_action('plugins_loaded', function () {
 
 // Add a plugin action link to the plugin page
 add_filter('plugin_action_links_' . plugin_basename(__FILE__), function ($links) {
-    $links[] = '<a href="' . admin_url('options-general.php?page=postal_mail_settings') . '">' . __('Settings', 'postal-mail') . '</a>';
+    $settings_url = admin_url('options-general.php?page=postal_mail_settings');
+    $link_text = __('Settings', 'postal-mail');
+    $links[] = '<a href="' . $settings_url . '">' . $link_text . '</a>';
     return $links;
 });
 
