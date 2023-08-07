@@ -152,32 +152,37 @@ class PostalMail
         // Send the message and get the result
         $result = $message->send($client);
 
-        // Loop through each of the recipients to get the message ID and token
-        foreach ($result->recipients() as $email => $message) {
-            // Get the message ID and token for each recipient
-            $messageID = $message->id();
-            $messageToken = $message->token();
+        // Check if there are recipients
+        if ($result->size() > 0) {
+            // Loop through each of the recipients to get the message ID and token
+            foreach ($result->recipients() as $email => $message) {
+                // Get the message ID and token for each recipient
+                $messageID = $message->id();
+                $messageToken = $message->token();
 
-            // Store these values in the database along with the recipient's email
-            global $wpdb;
-            $table_name = $wpdb->prefix . 'postal';
-            $wpdb->insert(
-                $table_name,
-                [
-                    'email' => $email,
-                    'message_id' => $messageID,
-                    'token' => $messageToken,
-                    'time' => current_time('mysql'),
-                ]
-            );
-        }
-
-        return $result;
-        } catch (Exception $e) {
+                // Store these values in the database along with the recipient's email
+                global $wpdb;
+                $table_name = $wpdb->prefix . 'postal';
+                $wpdb->insert(
+                    $table_name,
+                    [
+                        'email' => $email,
+                        'message_id' => $messageID,
+                        'token' => $messageToken,
+                        'time' => current_time('mysql'),
+                    ]
+                );
+            }
+            return true; // Return true if the send was successful
+        } else {
             // If there was an error, log it and return false
-            error_log('Postal API Error: ' . $e->getMessage());
+            error_log('Postal API Error: Failed to send email.');
             return false;
         }
+    } catch (Exception $e) {
+        // If there was an exception, log it and return false
+        error_log('Postal API Exception: ' . $e->getMessage());
+        return false;}
     }
 
 
@@ -204,7 +209,7 @@ class PostalMail
 
         // Check if the message is provided and not null
         if (isset($args['message']) && !is_null($args['message'])) {
-            $plain_body = sanitize_text_field(strip_tags($args['message']));
+            $plain_body = $args['message'];
             $html_body = $args['message']; // Directly assign the HTML content without sanitization or additional tags
             $params['plain_body'] = $plain_body;
             $params['html_body'] = $html_body;
